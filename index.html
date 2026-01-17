@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- SEO Meta Tags -->
+    <title>Base64 Image Converter - Free Online Tool | Encode & Decode Images</title>
+    <meta name="description"
+        content="Free Base64 image converter. Instantly convert images to Base64 and decode Base64 to images. Fast, private, and works offline. Supports PNG, JPEG, WebP, GIF, BMP.">
+    <meta name="keywords"
+        content="base64 converter, image to base64, base64 to image, base64 encoder, base64 decoder, online converter, free tool, image converter">
+    <meta name="author" content="Sham Narwaria">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://sham-narwaria.netlify.app/">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://sham-narwaria.netlify.app/">
+    <meta property="og:title" content="Base64 Image Converter - Free Online Tool">
+    <meta property="og:description"
+        content="Free Base64 image converter. Instantly convert images to Base64 and decode Base64 to images. 100% private, client-side processing.">
+    <meta property="og:image" content="https://sham-narwaria.netlify.app/og-image.png">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://sham-narwaria.netlify.app/">
+    <meta property="twitter:title" content="Base64 Image Converter - Free Online Tool">
+    <meta property="twitter:description"
+        content="Free Base64 image converter. Convert images to Base64 and back. Fast, private, no signup required.">
+    <meta property="twitter:image" content="https://sham-narwaria.netlify.app/og-image.png">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔄</text></svg>">
+
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div class="app">
+        <!-- Header -->
+        <header>
+            <h1>Base64 Converter</h1>
+            <p>Convert images to Base64 and back - Simple & Fast</p>
+        </header>
+
+        <!-- Mode Tabs -->
+        <div class="tabs">
+            <button class="tab active" data-tab="decode">
+                <span class="emoji">📥</span>
+                <span>Base64 → Image</span>
+            </button>
+            <button class="tab" data-tab="encode">
+                <span class="emoji">📤</span>
+                <span>Image → Base64</span>
+            </button>
+        </div>
+
+        <!-- Main Content -->
+        <main>
+            <!-- Decode Mode -->
+            <div class="tab-content active" id="decode">
+                <div class="card">
+                    <label>Paste your Base64 string</label>
+                    <textarea id="base64Input" placeholder="Paste Base64 here... or drag & drop a .txt file"
+                        spellcheck="false"></textarea>
+                    <div class="char-count">0 characters</div>
+
+                    <div class="actions">
+                        <button class="btn primary" id="decodeBtn">
+                            <span>🔄</span> Convert to Image
+                        </button>
+                        <button class="btn" id="loadExample">Load Example</button>
+                        <button class="btn" id="clearDecode">Clear</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Encode Mode -->
+            <div class="tab-content" id="encode">
+                <div class="card">
+                    <div class="upload-zone" id="uploadZone">
+                        <span class="upload-icon">📁</span>
+                        <h3>Drop image here or click to browse</h3>
+                        <p>Supports: PNG, JPEG, GIF, WebP</p>
+                        <input type="file" id="fileInput" accept="image/*" hidden>
+                    </div>
+
+                    <div class="format-options hidden" id="formatOptions">
+                        <div class="option">
+                            <label>Format</label>
+                            <select id="format">
+                                <option value="png">PNG</option>
+                                <option value="jpeg">JPEG</option>
+                                <option value="webp">WebP</option>
+                            </select>
+                        </div>
+                        <div class="option" id="qualityOption">
+                            <label>Quality: <span id="qualityValue">90</span>%</label>
+                            <input type="range" id="quality" min="10" max="100" value="90">
+                        </div>
+                    </div>
+
+                    <div class="actions">
+                        <button class="btn primary hidden" id="encodeBtn">
+                            <span>🔄</span> Convert to Base64
+                        </button>
+                        <button class="btn hidden" id="clearEncode">Clear</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Result Area -->
+            <div class="result" id="result">
+                <div class="card">
+                    <div class="result-header">
+                        <h3>Result</h3>
+                        <div class="result-actions">
+                            <button class="btn small" id="downloadBtn" disabled>⬇️ Download</button>
+                            <button class="btn small" id="copyBtn" disabled>📋 Copy</button>
+                        </div>
+                    </div>
+
+                    <!-- Image Preview -->
+                    <div class="preview" id="preview">
+                        <div class="placeholder">
+                            <span class="emoji">🖼️</span>
+                            <p>Your result will appear here</p>
+                        </div>
+                    </div>
+
+                    <!-- Image Info -->
+                    <div class="info hidden" id="imageInfo">
+                        <div class="info-item">
+                            <span class="label">Size</span>
+                            <span class="value" id="dimensions">-</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="label">Format</span>
+                            <span class="value" id="formatInfo">-</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="label">File Size</span>
+                            <span class="value" id="fileSize">-</span>
+                        </div>
+                    </div>
+
+                    <!-- Base64 Output (for encode mode) -->
+                    <div class="base64-output hidden" id="base64Output">
+                        <label>Base64 Output</label>
+                        <textarea id="base64OutputText" readonly
+                            placeholder="Base64 string will appear here..."></textarea>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Alert -->
+        <div class="alert-container" id="alertContainer"></div>
+
+        <!-- Info Section -->
+        <div class="info-section">
+            <div class="info-cards">
+                <div class="info-card">
+                    <div class="info-icon">⚡</div>
+                    <h4>Lightning Fast</h4>
+                    <p>Instant conversion - no waiting, no uploading to servers</p>
+                </div>
+                <div class="info-card">
+                    <div class="info-icon">🔒</div>
+                    <h4>100% Private</h4>
+                    <p>All processing happens in your browser - your data never leaves</p>
+                </div>
+                <div class="info-card">
+                    <div class="info-icon">🎨</div>
+                    <h4>Multiple Formats</h4>
+                    <p>Support for PNG, JPEG, WebP, GIF, and BMP images</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer>
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>Why Use This Tool?</h4>
+                    <ul class="benefits-list">
+                        <li>Same speed everywhere - depends on your device, not a server</li>
+                        <li>100% Private - your images never leave your browser</li>
+                        <li>Completely Free - no limits, no accounts, no tracking</li>
+                        <li>Works Offline - after first load, no internet needed</li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>About This Tool</h4>
+                    <p>A simple, free converter for Base64 encoding and decoding images. Perfect for developers,
+                        designers, and anyone working with Base64 data.</p>
+                    <p><strong>Supported Formats:</strong></p>
+                    <p>Input: PNG, JPEG, GIF, WebP, BMP</p>
+                    <p>Output: PNG, JPEG, WebP</p>
+                </div>
+                <div class="footer-section">
+                    <h4>How It Works</h4>
+                    <p>Base64 encoding converts binary image data into text format, making it easy to embed images in
+                        HTML, CSS, or JSON.</p>
+                    <p><strong>All processing happens in your browser</strong> - no data is sent to any server, ensuring
+                        complete privacy and instant results.</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>Made with ❤️ for the web community • Free & Open Source</p>
+            </div>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
