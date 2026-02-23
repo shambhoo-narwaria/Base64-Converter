@@ -177,6 +177,20 @@
             </div>
         </main>
 
+        <!-- Image Viewer Modal -->
+        <div id="imageViewer" class="modal hidden">
+            <div class="modal-content">
+                <button class="modal-close" id="closeViewer">×</button>
+                <div class="modal-body">
+                    <img id="viewerImg" src="" alt="Full Screen View">
+                </div>
+                <div class="modal-footer">
+                    <span id="viewerMeta">Dimensions</span>
+                    <button class="btn small" id="viewerDownload">⬇️ Download</button>
+                </div>
+            </div>
+        </div>
+
         <!-- Alert -->
         <div class="alert-container" id="alertContainer"></div>
 
@@ -235,7 +249,7 @@
         </footer>
     </div>
 
-    <script src="script.js"></script>
+    <script src="script.js?v=4.0"></script>
 </body>
 
 </html>
