@@ -40,6 +40,11 @@ class Converter {
 
         // Alert
         this.alertContainer = document.getElementById('alertContainer');
+
+        // History elements
+        this.historyList = document.getElementById('historyList');
+        this.clearHistoryBtn = document.getElementById('clearHistory');
+        this.history = JSON.parse(localStorage.getItem('base64_history') || '[]');
     }
 
     initEvents() {
@@ -72,6 +77,10 @@ class Converter {
         // Result events
         this.downloadBtn.addEventListener('click', () => this.download());
         this.copyBtn.addEventListener('click', () => this.copy());
+
+        // History events
+        this.clearHistoryBtn.addEventListener('click', () => this.clearHistory());
+        this.renderHistory();
     }
 
     switchTab(tab) {
@@ -131,6 +140,7 @@ class Converter {
 
             this.imageData = { dataUrl, base64, format };
             this.showResult(dataUrl, format, base64.length);
+            this.addToHistory(dataUrl, format, base64.length);
             this.showAlert('Image converted successfully!', 'success');
 
         } catch (error) {
@@ -219,6 +229,7 @@ class Converter {
 
             this.imageData = { dataUrl, base64, format };
             this.showResult(dataUrl, format, base64.length, true);
+            this.addToHistory(dataUrl, format, base64.length);
             this.showAlert('Image encoded successfully!', 'success');
 
         } catch (error) {
@@ -331,6 +342,69 @@ class Converter {
             alert.style.opacity = '0';
             setTimeout(() => alert.remove(), 300);
         }, 3000);
+    }
+
+    addToHistory(dataUrl, format, base64Length) {
+        const img = new Image();
+        img.onload = () => {
+            const item = {
+                id: Date.now(),
+                dataUrl,
+                format,
+                size: base64Length,
+                width: img.naturalWidth,
+                height: img.naturalHeight,
+                timestamp: new Date().toLocaleTimeString()
+            };
+
+            // Keep only the last 2 items
+            this.history.unshift(item);
+            this.history = this.history.slice(0, 2);
+
+            try {
+                localStorage.setItem('base64_history', JSON.stringify(this.history));
+            } catch (e) {
+                console.warn('Failed to save to localStorage (file might be too large)');
+            }
+            this.renderHistory();
+        };
+        img.src = dataUrl;
+    }
+
+    renderHistory() {
+        if (this.history.length === 0) {
+            this.historyList.innerHTML = `
+                <div class="placeholder">
+                    <span class="emoji">📝</span>
+                    <p>No history yet. Convert some images!</p>
+                </div>
+            `;
+            return;
+        }
+
+        this.historyList.innerHTML = this.history.map(item => `
+            <div class="history-item">
+                <div class="history-preview">
+                    <img src="${item.dataUrl}" alt="History item">
+                </div>
+                <div class="history-info">
+                    <span class="time">${item.timestamp}</span>
+                    <span class="meta">${item.width} × ${item.height}px • ${item.format.toUpperCase()}</span>
+                    <span class="meta">${this.formatSize(Math.round((item.size * 3) / 4))}</span>
+                </div>
+                <div class="history-actions">
+                    <button class="btn small" onclick="window.open('${item.dataUrl}', '_blank')">🔍 View Original</button>
+                    <button class="btn small" onclick="const a=document.createElement('a');a.href='${item.dataUrl}';a.download='history-${item.id}.${item.format}';a.click();">⬇️</button>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    clearHistory() {
+        this.history = [];
+        localStorage.removeItem('base64_history');
+        this.renderHistory();
+        this.showAlert('History cleared', 'success');
     }
 }
 

@@ -50,8 +50,11 @@ git clone https://github.com/shambhoo-narwaria/base64-converter.git
 # Navigate to directory
 cd base64-converter
 
-# Open with live server or Python
-python -m http.server 8000
+# Install dependencies
+npm install
+
+# Start the server
+npm start
 
 # Open browser
 http://localhost:8000

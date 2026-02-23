@@ -56,6 +56,10 @@
                 <span class="emoji">📤</span>
                 <span>Image → Base64</span>
             </button>
+            <button class="tab" data-tab="history">
+                <span class="emoji">🕰️</span>
+                <span>History</span>
+            </button>
         </div>
 
         <!-- Main Content -->
@@ -108,6 +112,22 @@
                             <span>🔄</span> Convert to Base64
                         </button>
                         <button class="btn hidden" id="clearEncode">Clear</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- History Mode -->
+            <div class="tab-content" id="history">
+                <div class="card history-card">
+                    <div class="result-header">
+                        <h3>Recently Converted</h3>
+                        <button class="btn small" id="clearHistory">Clear History</button>
+                    </div>
+                    <div id="historyList" class="history-list">
+                        <div class="placeholder">
+                            <span class="emoji">📝</span>
+                            <p>No history yet. Convert some images!</p>
+                        </div>
                     </div>
                 </div>
             </div>

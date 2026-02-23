@@ -4,8 +4,8 @@
     "description": "Simple and modern Base64 image converter with bidirectional conversion support",
     "main": "index.html",
     "scripts": {
-        "start": "python -m http.server 8000",
-        "dev": "python -m http.server 8000"
+        "start": "http-server -p 8000",
+        "dev": "http-server -p 8000"
     },
     "keywords": [
         "base64",
@@ -15,5 +15,8 @@
         "decode"
     ],
     "author": "Sham Narwaria",
-    "license": "MIT"
+    "license": "MIT",
+    "devDependencies": {
+        "http-server": "^14.1.1"
+    }
 }
