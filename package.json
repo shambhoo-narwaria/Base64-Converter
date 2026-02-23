@@ -1,0 +1,19 @@
+{
+    "name": "base64-converter",
+    "version": "1.0.0",
+    "description": "Simple and modern Base64 image converter with bidirectional conversion support",
+    "main": "index.html",
+    "scripts": {
+        "start": "python -m http.server 8000",
+        "dev": "python -m http.server 8000"
+    },
+    "keywords": [
+        "base64",
+        "converter",
+        "image",
+        "encode",
+        "decode"
+    ],
+    "author": "Sham Narwaria",
+    "license": "MIT"
+}
