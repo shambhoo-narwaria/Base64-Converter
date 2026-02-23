@@ -44,7 +44,14 @@ class Converter {
         // History elements
         this.historyList = document.getElementById('historyList');
         this.clearHistoryBtn = document.getElementById('clearHistory');
-        this.history = JSON.parse(localStorage.getItem('base64_history') || '[]');
+        this.loadHistory();
+
+        // Modal elements
+        this.imageViewer = document.getElementById('imageViewer');
+        this.viewerImg = document.getElementById('viewerImg');
+        this.closeViewer = document.getElementById('closeViewer');
+        this.viewerMeta = document.getElementById('viewerMeta');
+        this.viewerDownload = document.getElementById('viewerDownload');
     }
 
     initEvents() {
@@ -80,6 +87,14 @@ class Converter {
 
         // History events
         this.clearHistoryBtn.addEventListener('click', () => this.clearHistory());
+        this.historyList.addEventListener('click', (e) => this.handleHistoryClick(e));
+        
+        // Modal events
+        this.closeViewer.addEventListener('click', () => this.imageViewer.classList.add('hidden'));
+        this.imageViewer.addEventListener('click', (e) => {
+            if (e.target === this.imageViewer) this.imageViewer.classList.add('hidden');
+        });
+
         this.renderHistory();
     }
 
@@ -269,9 +284,20 @@ class Converter {
     download() {
         if (!this.imageData) return;
 
+        const now = new Date();
+        const yyyy = now.getFullYear();
+        const mm = String(now.getMonth() + 1).padStart(2, '0');
+        const dd = String(now.getDate()).padStart(2, '0');
+        const hh = String(now.getHours()).padStart(2, '0');
+        const min = String(now.getMinutes()).padStart(2, '0');
+        const ss = String(now.getSeconds()).padStart(2, '0');
+        
+        const timestamp = `${yyyy}-${mm}-${dd}-${hh}-${min}-${ss}`;
+        const filename = `${timestamp}-Converted.${this.imageData.format}`;
+
         const link = document.createElement('a');
         link.href = this.imageData.dataUrl;
-        link.download = `converted-${Date.now()}.${this.imageData.format}`;
+        link.download = filename;
         link.click();
 
         this.showAlert('Image downloaded!', 'success');
@@ -393,11 +419,81 @@ class Converter {
                     <span class="meta">${this.formatSize(Math.round((item.size * 3) / 4))}</span>
                 </div>
                 <div class="history-actions">
-                    <button class="btn small" onclick="window.open('${item.dataUrl}', '_blank')">🔍 View Original</button>
-                    <button class="btn small" onclick="const a=document.createElement('a');a.href='${item.dataUrl}';a.download='history-${item.id}.${item.format}';a.click();">⬇️</button>
+                    <button class="btn small primary-outline" data-action="view" data-id="${item.id}">🔍 View Original</button>
+                    <button class="btn small" data-action="download" data-id="${item.id}">⬇️</button>
                 </div>
             </div>
         `).join('');
+    }
+
+    loadHistory() {
+        try {
+            const data = localStorage.getItem('base64_history');
+            this.history = JSON.parse(data || '[]');
+            
+            // If any item has an old format or we want to force refresh for this update
+            if (this.history.length > 0 && !this.history[0].timestamp) {
+                console.warn('Old history format detected, clearing...');
+                this.clearHistory();
+            }
+        } catch (e) {
+            this.history = [];
+        }
+    }
+
+    handleHistoryClick(e) {
+        console.log('History clicked', e.target);
+        const btn = e.target.closest('button');
+        if (!btn || !btn.dataset.id) return;
+
+        e.preventDefault();
+        const id = parseInt(btn.dataset.id);
+        const item = this.history.find(i => i.id === id);
+        if (!item) return;
+
+        if (btn.dataset.action === 'view') {
+            this.viewOriginal(item);
+        } else if (btn.dataset.action === 'download') {
+            this.downloadItem(item);
+        }
+    }
+
+    viewOriginal(item) {
+        console.log('Opening modal for', item);
+        if (!this.imageViewer) {
+            console.error('Modal element not found!');
+            return;
+        }
+        this.viewerImg.src = item.dataUrl;
+        this.viewerMeta.textContent = `${item.width} × ${item.height}px • ${item.format.toUpperCase()} • ${this.formatSize(Math.round((item.size * 3) / 4))}`;
+        
+        // Handle download button in modal
+        this.viewerDownload.onclick = () => this.downloadItem(item);
+        
+        this.imageViewer.classList.remove('hidden');
+    }
+
+    downloadItem(item) {
+        const now = new Date(item.id);
+        const yyyy = now.getFullYear();
+        const mm = String(now.getMonth() + 1).padStart(2, '0');
+        const dd = String(now.getDate()).padStart(2, '0');
+        const hh = String(now.getHours()).padStart(2, '0');
+        const min = String(now.getMinutes()).padStart(2, '0');
+        const ss = String(now.getSeconds()).padStart(2, '0');
+        
+        const timestamp = `${yyyy}-${mm}-${dd}-${hh}-${min}-${ss}`;
+        
+        const a = document.createElement('a');
+        a.href = item.dataUrl;
+        a.download = `${timestamp}-History.${item.format}`;
+        a.click();
+    }
+
+    viewImage(dataUrl) {
+        // Redundant now, but keeping for compatibility if called elsewhere
+        const item = { dataUrl, format: 'png', id: Date.now(), size: dataUrl.length, width: '?', height: '?' };
+        this.viewOriginal(item);
     }
 
     clearHistory() {
@@ -410,5 +506,6 @@ class Converter {
 
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
+    console.log('Converter Version 4.0 Loaded');
     new Converter();
 });
